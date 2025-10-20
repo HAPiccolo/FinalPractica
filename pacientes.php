@@ -66,8 +66,7 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo date('d/m/Y H:i', strtotime($paciente['fecha_registro'])); ?></td>
                                 <td>
                                     <a href="ver_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-info">Ver</a>
-                                    <a href="editar_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-warning">Editar</a>
-                                    <a href="eliminar_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este registro?')">Eliminar</a>
+                                      <a href="eliminar_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este registro?')">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

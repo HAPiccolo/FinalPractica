@@ -33,3 +33,47 @@ body {
 .alert {
     border-radius: 8px;
 }
+
+.btn-editar{
+    background-color: #ffc107;
+    color: rgb(24, 110, 50);
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    padding: 30px;
+}
+
+.card .card-body {
+    text-align: center;
+}
+
+.card .btn {
+    display: inline-block;
+    width: auto !important;
+    margin: 0.25rem;
+}
+
+/* Encabezados colapsables */
+.card-header .btn {
+    background-color: #0d6efd;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+}
+
+/* Separación entre secciones */
+.card .collapse + .card-header,
+.card-header.mt-2 {
+    margin-top: 0.5rem;
+}
+
+/* Asegura que botones dentro de card-body no ocupen todo el ancho */
+.card .card-body .btn {
+    display: inline-block;
+    width: auto !important;
+    margin: 0.25rem;
+}
+
