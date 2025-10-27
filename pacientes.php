@@ -35,6 +35,9 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <li class="nav-item">
                         <a class="nav-link active" href="pacientes.php">Ver Pacientes</a>
                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="estadisticas.php">Estadisticas</a>
+                    </li>
                 </ul>
             </div>
         </div>
