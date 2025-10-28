@@ -48,7 +48,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">Sistema Traumatología</a>
+            <a class="navbar-brand" href="index.php">Sistema Traumatología</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -131,7 +131,9 @@
                             </thead>
                             <tbody>
                                 <?php if (empty($yearly)) : ?>
-                                    <tr><td colspan="2">No hay datos registrados.</td></tr>
+                                    <tr>
+                                        <td colspan="2">No hay datos registrados.</td>
+                                    </tr>
                                 <?php else : ?>
                                     <?php foreach ($yearly as $y) : ?>
                                         <tr>
@@ -151,7 +153,7 @@
 
     <script>
         // Datos para el gráfico mensual
-        const monthlyLabels = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        const monthlyLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
         const monthlyData = <?= json_encode(array_values($monthly)) ?>; // 12 valores
 
         const ctx = document.getElementById('monthlyChart').getContext('2d');
@@ -169,14 +171,21 @@
             },
             options: {
                 scales: {
-                    y: { beginAtZero: true, precision:0 }
+                    y: {
+                        beginAtZero: true,
+                        precision: 0
+                    }
                 }
             }
         });
 
         // Datos para el gráfico por tipo
-        const types = <?= json_encode(array_map(function($t){return $t['tipo_accidente'];}, $types)) ?>;
-        const typesCounts = <?= json_encode(array_map(function($t){return intval($t['total']);}, $types)) ?>;
+        const types = <?= json_encode(array_map(function ($t) {
+                            return $t['tipo_accidente'];
+                        }, $types)) ?>;
+        const typesCounts = <?= json_encode(array_map(function ($t) {
+                                return intval($t['total']);
+                            }, $types)) ?>;
 
         const ctx2 = document.getElementById('typesChart').getContext('2d');
         new Chart(ctx2, {
@@ -185,7 +194,7 @@
                 labels: types,
                 datasets: [{
                     data: typesCounts,
-                    backgroundColor: ['#007bff','#28a745','#ffc107','#dc3545','#6f42c1','#20c997','#fd7e14','#6610f2']
+                    backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14', '#6610f2']
                 }]
             }
         });
