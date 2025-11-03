@@ -25,7 +25,7 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
     <div class="container mt-4">
-        <h2 class="text-center mb-4">Listado de Accidentados</h2>
+        <h2 class="text-center mb-4">Listado de Accidentados </h2>
 
         <?php if (count($pacientes) > 0): ?>
             <div class="table-responsive">
@@ -50,7 +50,9 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo date('d/m/Y H:i', strtotime($paciente['fecha_registro'])); ?></td>
                                 <td>
                                     <a href="ver_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-info">Ver</a>
+                                    <!-- Oculto por el momento
                                     <a href="eliminar_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este registro?')">Eliminar</a>
+                        -->
                                 </td>
                             </tr>
                         <?php endforeach; ?>
