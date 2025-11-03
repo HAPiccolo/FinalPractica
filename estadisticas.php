@@ -46,30 +46,9 @@
     $topType = count($types) > 0 ? $types[0]['tipo_accidente'] . ' (' . $types[0]['total'] . ')' : 'N/A';
     ?>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">Sistema Traumatología</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="registrar.php">Registrar Paciente</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="pacientes.php">Ver Pacientes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="estadisticas.php">Estadísticas</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <?php
+    include "navbar.php";
+    ?>
 
     <main class="container my-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
