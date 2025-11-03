@@ -25,7 +25,7 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
     <div class="container mt-4">
-        <h2 class="text-center mb-4">Accidentes Registrados</h2>
+        <h2 class="text-center mb-4">Listado de Accidentados</h2>
 
         <?php if (count($pacientes) > 0): ?>
             <div class="table-responsive">

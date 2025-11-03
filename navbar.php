@@ -13,7 +13,7 @@
                      <a class="nav-link" href="./registrar.php">Registrar Accidente</a>
                  </li>
                  <li class="nav-item">
-                     <a class="nav-link" href="./pacientes.php">Lista de accidentes</a>
+                     <a class="nav-link" href="./pacientes.php">Lista de accidentados</a>
                  </li>
                  <li class="nav-item">
                      <a class="nav-link" href="estadisticas.php">Estadisticas</a>
