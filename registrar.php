@@ -2,43 +2,61 @@
 include 'database.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Recoger y sanitizar datos del formulario
-    $nombre_apellido = htmlspecialchars($_POST['nombre_apellido']);
-    $dni = htmlspecialchars($_POST['dni']);
-    $edad = htmlspecialchars($_POST['edad']);
-    $sexo = htmlspecialchars($_POST['sexo']);
-    $telefono = htmlspecialchars($_POST['telefono']);
-    $obra_social = htmlspecialchars($_POST['obra_social']);
-    $fecha_accidente = htmlspecialchars($_POST['fecha_accidente']);
-    $ubicacion = htmlspecialchars($_POST['ubicacion']);
-    $tipo_accidente = implode(', ', $_POST['tipo_accidente']);
-    $vehiculo_involucrado = isset($_POST['vehiculo_involucrado']) ? implode(', ', $_POST['vehiculo_involucrado']) : '';
-    $uso_casco_cinturon = htmlspecialchars($_POST['uso_casco_cinturon']);
-    $estado_via = htmlspecialchars($_POST['estado_via']);
-    $factores_riesgo = htmlspecialchars($_POST['factores_riesgo']);
-    $lugar_atencion = htmlspecialchars($_POST['lugar_atencion']);
-    $traslado_ambulancia = htmlspecialchars($_POST['traslado_ambulancia']);
-    $tiempo_atencion = htmlspecialchars($_POST['tiempo_atencion']);
-    $region_afectada = htmlspecialchars($_POST['region_afectada']);
-    $tipo_lesion = implode(', ', $_POST['tipo_lesion']);
-    $tratamiento_inicial = htmlspecialchars($_POST['tratamiento_inicial']);
-    $evolucion_seguimiento = htmlspecialchars($_POST['evolucion_seguimiento']);
-
     try {
-        $sql = "INSERT INTO pacientes (nombre_apellido, dni, edad, sexo, telefono, obra_social, 
-                fecha_accidente, ubicacion, tipo_accidente, vehiculo_involucrado, uso_casco_cinturon, 
-                estado_via, factores_riesgo, lugar_atencion, traslado_ambulancia, tiempo_atencion, 
-                region_afectada, tipo_lesion, tratamiento_inicial, evolucion_seguimiento) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // === 1. Sanitizar entradas ===
+        $nombre_apellido = htmlspecialchars($_POST['nombre_apellido']);
+        $dni = htmlspecialchars($_POST['dni']);
+        $edad = (int)$_POST['edad'];
+        $sexo = htmlspecialchars($_POST['sexo']);
+        $telefono = htmlspecialchars($_POST['telefono']);
+        $obra_social = htmlspecialchars($_POST['obra_social']);
 
-        $stmt = $pdo->prepare($sql);
+        // ⚠️ Convertimos correctamente el formato del input "datetime-local"
+        // Ejemplo de entrada: "2025-11-03T15:30"
+        // Esto lo transforma en "2025-11-03 15:30:00"
+        $fecha_accidente = date('Y-m-d H:i:s', strtotime($_POST['fecha_accidente']));
+
+        $ubicacion = htmlspecialchars($_POST['ubicacion']);
+        $tipo_accidente = isset($_POST['tipo_accidente']) ? implode(', ', $_POST['tipo_accidente']) : '';
+        $vehiculo_involucrado = isset($_POST['vehiculo_involucrado']) ? implode(', ', $_POST['vehiculo_involucrado']) : '';
+        $uso_casco_cinturon = htmlspecialchars($_POST['uso_casco_cinturon']);
+        $estado_via = htmlspecialchars($_POST['estado_via']);
+        $factores_riesgo = htmlspecialchars($_POST['factores_riesgo']);
+        $lugar_atencion = htmlspecialchars($_POST['lugar_atencion']);
+        $traslado_ambulancia = htmlspecialchars($_POST['traslado_ambulancia']);
+        $tiempo_atencion = htmlspecialchars($_POST['tiempo_atencion']);
+        $region_afectada = htmlspecialchars($_POST['region_afectada']);
+        $tipo_lesion = isset($_POST['tipo_lesion']) ? implode(', ', $_POST['tipo_lesion']) : '';
+        $tratamiento_inicial = htmlspecialchars($_POST['tratamiento_inicial']);
+        $evolucion_seguimiento = htmlspecialchars($_POST['evolucion_seguimiento']);
+
+        // === 2. Verificar si el paciente ya existe ===
+        $stmt = $pdo->prepare("SELECT id FROM pacientes WHERE dni = ?");
+        $stmt->execute([$dni]);
+        $paciente = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($paciente) {
+            $paciente_id = $paciente['id'];
+        } else {
+            $sql_paciente = "INSERT INTO pacientes (nombre_apellido, dni, edad, sexo, telefono, obra_social)
+                             VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql_paciente);
+            $stmt->execute([$nombre_apellido, $dni, $edad, $sexo, $telefono, $obra_social]);
+            $paciente_id = $pdo->lastInsertId();
+        }
+
+        // === 3. Registrar el accidente asociado al paciente ===
+        $sql_accidente = "INSERT INTO accidentes (
+            paciente_id, fecha_accidente, ubicacion, tipo_accidente,
+            vehiculo_involucrado, uso_casco_cinturon, estado_via,
+            factores_riesgo, lugar_atencion, traslado_ambulancia,
+            tiempo_atencion, region_afectada, tipo_lesion,
+            tratamiento_inicial, evolucion_seguimiento
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $pdo->prepare($sql_accidente);
         $stmt->execute([
-            $nombre_apellido,
-            $dni,
-            $edad,
-            $sexo,
-            $telefono,
-            $obra_social,
+            $paciente_id,
             $fecha_accidente,
             $ubicacion,
             $tipo_accidente,
@@ -55,12 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $evolucion_seguimiento
         ]);
 
-        $success = "Paciente registrado exitosamente!";
+        $success = "✅ Accidente registrado correctamente para el paciente con DNI: $dni";
     } catch (PDOException $e) {
-        $error = "Error al registrar paciente: " . $e->getMessage();
+        $error = "❌ Error al registrar: " . $e->getMessage();
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">

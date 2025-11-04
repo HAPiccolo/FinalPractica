@@ -11,40 +11,7 @@
 </head>
 
 <body>
-    <?php
-    require 'database.php'; // crea $pdo y la tabla si no existe
 
-    // Año seleccionado por query param (por defecto año actual)
-    $selectedYear = isset($_GET['year']) ? intval($_GET['year']) : intval(date('Y'));
-
-    // Lista de años disponibles
-    $yearsStmt = $pdo->query("SELECT DISTINCT YEAR(fecha_accidente) AS anio FROM pacientes ORDER BY anio DESC");
-    $years = $yearsStmt->fetchAll(PDO::FETCH_COLUMN);
-
-    // Conteo por mes para el año seleccionado (mes 1..12)
-    $monthly = array_fill(1, 12, 0);
-    $stmt = $pdo->prepare("SELECT MONTH(fecha_accidente) AS mes, COUNT(*) AS total FROM pacientes WHERE YEAR(fecha_accidente)=? GROUP BY mes ORDER BY mes");
-    $stmt->execute([$selectedYear]);
-    while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $monthly[intval($r['mes'])] = intval($r['total']);
-    }
-
-    // Conteo por año
-    $yearly = [];
-    $stmt = $pdo->query("SELECT YEAR(fecha_accidente) AS anio, COUNT(*) AS total FROM pacientes GROUP BY anio ORDER BY anio");
-    while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $yearly[] = $r;
-    }
-
-    // Conteo por tipo de accidente
-    $types = [];
-    $stmt = $pdo->query("SELECT IFNULL(NULLIF(tipo_accidente, ''), 'Sin especificar') AS tipo_accidente, COUNT(*) AS total FROM pacientes GROUP BY tipo_accidente ORDER BY total DESC");
-    while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $types[] = $r;
-    }
-
-    $topType = count($types) > 0 ? $types[0]['tipo_accidente'] . ' (' . $types[0]['total'] . ')' : 'N/A';
-    ?>
 
     <?php
     include "navbar.php";
