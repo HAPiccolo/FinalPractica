@@ -89,14 +89,14 @@ $yearly = $pdo->query($sqlYearly)->fetchAll(PDO::FETCH_ASSOC);
 
     <main class="container my-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Estadísticas de Accidentes</h2>
+            <h2>📊 Estadísticas de Accidentes</h2>
         </div>
 
-        <!-- Filtro de año y rango de meses -->
+        <!-- 🔹 FILTROS -->
         <form id="filterForm" method="get" class="row g-3 mb-4">
             <div class="col-md-3">
                 <label for="year" class="form-label">Año</label>
-                <select id="year" name="year" class="form-select" onchange="this.form.submit()">
+                <select id="year" name="year" class="form-select">
                     <?php foreach ($years as $y): ?>
                         <option value="<?= $y ?>" <?= $y == $selectedYear ? 'selected' : '' ?>><?= $y ?></option>
                     <?php endforeach; ?>
@@ -123,70 +123,77 @@ $yearly = $pdo->query($sqlYearly)->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </form>
 
+        <!-- 🔹 PRIMERA FILA: Accidentes por mes + tipo más frecuente -->
         <div class="row">
-            <!-- Accidentes por mes -->
             <div class="col-lg-8 mb-4">
-                <div class="card">
+                <div class="card h-100 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">Accidentados por mes (<?= htmlspecialchars($selectedYear) ?>)</h5>
-                        <canvas id="monthlyChart" width="400" height="150"></canvas>
+                        <canvas id="monthlyChart" height="140"></canvas>
                     </div>
                 </div>
             </div>
-
-            <!-- Tipo de accidente y vehículo -->
             <div class="col-lg-4 mb-4">
-                <div class="card mb-3">
+                <div class="card h-100 text-center shadow-sm d-flex align-items-center justify-content-center">
                     <div class="card-body">
-                        <h6>Tipo de accidente más frecuente</h6>
-                        <p class="fs-5 fw-bold"><?= htmlspecialchars($topType) ?></p>
-                    </div>
-                </div>
-
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h6 class="card-title">Distribución por tipo de accidente</h6>
-                        <canvas id="typesChart" width="300" height="300"></canvas>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h6 class="card-title">Distribución por tipo de vehículo</h6>
-                        <canvas id="vehiclesChart" width="300" height="300"></canvas>
+                        <h5 class="card-title mb-3">Tipo de accidente más frecuente</h5>
+                        <p class="fs-4 fw-bold text-primary"><?= htmlspecialchars($topType) ?></p>
+                        <p class="text-muted">Año <?= htmlspecialchars($selectedYear) ?></p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabla resumen anual -->
-        <div class="row mt-4">
+        <!-- 🔹 SEGUNDA FILA: Tipos de accidente y tipos de vehículo -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Distribución por tipo de accidente</h5>
+                        <canvas id="typesChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Distribución por tipo de vehículo</h5>
+                        <canvas id="vehiclesChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔹 TERCERA FILA: Totales por año -->
+        <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">Totales de accidentados por año</h5>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Año</th>
-                                    <th>Cantidad</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($yearly)) : ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle">
+                                <thead class="table-dark">
                                     <tr>
-                                        <td colspan="2">No hay datos registrados.</td>
+                                        <th>Año</th>
+                                        <th>Cantidad</th>
                                     </tr>
-                                <?php else : ?>
-                                    <?php foreach ($yearly as $y): ?>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($yearly)): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($y['anio']) ?></td>
-                                            <td><?= htmlspecialchars($y['total']) ?></td>
+                                            <td colspan="2" class="text-center">No hay datos registrados.</td>
                                         </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
+                                    <?php else: ?>
+                                        <?php foreach ($yearly as $y): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($y['anio']) ?></td>
+                                                <td><?= htmlspecialchars($y['total']) ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
