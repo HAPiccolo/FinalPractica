@@ -1,5 +1,4 @@
 <?php
-
 include 'database.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -15,15 +14,17 @@ if (!$id) {
 }
 
 try {
-    $sql = "UPDATE pacientes SET evolucion_seguimiento = :evolucion WHERE id = :id";
+    $sql = "UPDATE accidentes 
+            SET evolucion_seguimiento = :evolucion 
+            WHERE id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':evolucion' => $evolucion,
         ':id' => $id
     ]);
-    header('Location: pacientes.php');
+
+    header("Location: ver_accidente.php?id=$id");
     exit;
 } catch (PDOException $e) {
-    die('Error BD: ' . $e->getMessage());
+    die('Error en base de datos: ' . $e->getMessage());
 }
-?>

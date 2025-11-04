@@ -1,11 +1,21 @@
 <?php
 include 'database.php';
-
-// Obtener todos los pacientes
-$sql = "SELECT * FROM pacientes ORDER BY fecha_registro DESC";
+// PHP: obtener todos los accidentes con datos del paciente
+$sql = "SELECT 
+            a.id AS accidente_id,
+            p.id AS paciente_id,
+            p.nombre_apellido,
+            p.dni,
+            p.edad,
+            a.tipo_accidente,
+            a.fecha_accidente
+        FROM pacientes p
+        INNER JOIN accidentes a ON a.paciente_id = p.id
+        ORDER BY a.fecha_accidente DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
-$pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +37,7 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container mt-4">
         <h2 class="text-center mb-4">Listado de Accidentados </h2>
 
-        <?php if (count($pacientes) > 0): ?>
+        <?php if (count($accidentados) > 0): ?>
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
@@ -36,23 +46,21 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>DNI</th>
                             <th>Edad</th>
                             <th>Accidente</th>
-                            <th>Fecha Registro</th>
+                            <th>Fecha Accidente</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($pacientes as $paciente): ?>
+                        <?php foreach ($accidentados as $row): ?>
                             <tr>
-                                <td><?php echo $paciente['nombre_apellido']; ?></td>
-                                <td><?php echo $paciente['dni']; ?></td>
-                                <td><?php echo $paciente['edad']; ?></td>
-                                <td><?php echo $paciente['tipo_accidente']; ?></td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($paciente['fecha_registro'])); ?></td>
+                                <td><?= htmlspecialchars($row['nombre_apellido']) ?></td>
+                                <td><?= htmlspecialchars($row['dni']) ?></td>
+                                <td><?= htmlspecialchars($row['edad']) ?></td>
+                                <td><?= htmlspecialchars($row['tipo_accidente']) ?></td>
+                                <td><?= !empty($row['fecha_accidente']) ? date('d/m/Y H:i', strtotime($row['fecha_accidente'])) : '-' ?></td>
                                 <td>
-                                    <a href="ver_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-info">Ver</a>
-                                    <!-- Oculto por el momento
-                                    <a href="eliminar_paciente.php?id=<?php echo $paciente['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de eliminar este registro?')">Eliminar</a>
-                        -->
+                                    <!-- Pasamos el id del accidente para ver el detalle de ese registro -->
+                                    <a href="ver_accidente.php?id=<?= $row['accidente_id'] ?>" class="btn btn-sm btn-info">Ver</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -61,9 +69,10 @@ $pacientes = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         <?php else: ?>
             <div class="alert alert-info text-center">
-                No hay pacientes registrados aún.
+                No hay registros de accidentes aún.
             </div>
         <?php endif; ?>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
