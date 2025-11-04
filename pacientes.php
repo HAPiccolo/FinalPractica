@@ -1,6 +1,14 @@
 <?php
 include 'database.php';
-// PHP: obtener todos los accidentes con datos del paciente
+
+// Si hay filtro por DNI, modificar la consulta
+$where = '';
+$params = [];
+if (isset($_GET['dni']) && !empty($_GET['dni'])) {
+    $where = ' WHERE p.dni = ?';
+    $params = [trim($_GET['dni'])];
+}
+
 $sql = "SELECT 
             a.id AS accidente_id,
             p.id AS paciente_id,
@@ -11,11 +19,12 @@ $sql = "SELECT
             a.fecha_accidente
         FROM pacientes p
         INNER JOIN accidentes a ON a.paciente_id = p.id
+        $where
         ORDER BY a.fecha_accidente DESC";
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -30,12 +39,27 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-    <?php
-    include "navbar.php";
-    ?>
+    <?php include "navbar.php"; ?>
 
     <div class="container mt-4">
-        <h2 class="text-center mb-4">Listado de Accidentados </h2>
+        <h2 class="text-center mb-4">Listado de Accidentados</h2>
+        
+        <!-- Filtro de búsqueda con botones -->
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <form class="d-flex gap-2" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="dni" id="dni" class="form-control" 
+                               placeholder="Buscar por DNI" 
+                               value="<?php echo htmlspecialchars($_GET['dni'] ?? ''); ?>">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                    <?php if (isset($_GET['dni']) && !empty($_GET['dni'])): ?>
+                        <a href="pacientes.php" class="btn btn-secondary">Limpiar</a>
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
 
         <?php if (count($accidentados) > 0): ?>
             <div class="table-responsive">
@@ -45,22 +69,22 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Nombre</th>
                             <th>DNI</th>
                             <th>Edad</th>
-                            <th>Accidente</th>
-                            <th>Fecha Accidente</th>
+                            <th>Tipo Accidente</th>
+                            <th>Fecha</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($accidentados as $row): ?>
                             <tr>
-                                <td><?= htmlspecialchars($row['nombre_apellido']) ?></td>
-                                <td><?= htmlspecialchars($row['dni']) ?></td>
-                                <td><?= htmlspecialchars($row['edad']) ?></td>
-                                <td><?= htmlspecialchars($row['tipo_accidente']) ?></td>
-                                <td><?= !empty($row['fecha_accidente']) ? date('d/m/Y H:i', strtotime($row['fecha_accidente'])) : '-' ?></td>
+                                <td><?php echo htmlspecialchars($row['nombre_apellido']); ?></td>
+                                <td><?php echo htmlspecialchars($row['dni']); ?></td>
+                                <td><?php echo htmlspecialchars($row['edad']); ?></td>
+                                <td><?php echo htmlspecialchars($row['tipo_accidente']); ?></td>
+                                <td><?php echo date('d/m/Y H:i', strtotime($row['fecha_accidente'])); ?></td>
                                 <td>
-                                    <!-- Pasamos el id del accidente para ver el detalle de ese registro -->
-                                    <a href="ver_accidente.php?id=<?= $row['accidente_id'] ?>" class="btn btn-sm btn-info">Ver</a>
+                                    <a href="ver_accidente.php?id=<?php echo $row['accidente_id']; ?>" 
+                                       class="btn btn-sm btn-primary">Ver</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -69,13 +93,15 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         <?php else: ?>
             <div class="alert alert-info text-center">
-                No hay registros de accidentes aún.
+                <?php if (!empty($_GET['dni'])): ?>
+                    No se encontraron accidentes para el DNI: <?php echo htmlspecialchars($_GET['dni']); ?>
+                <?php else: ?>
+                    No hay registros de accidentes aún.
+                <?php endif; ?>
             </div>
         <?php endif; ?>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
