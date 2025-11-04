@@ -117,22 +117,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="nombre_apellido" class="form-label">Nombre y Apellido</label>
-                            <input type="text" class="form-control border-dark" id="nombre_apellido" name="nombre_apellido" required>
+                            <label for="dni" class="form-label">DNI / Documento</label>
+                            <input type="text" class="form-control border-dark" id="dni" name="dni" required onblur="buscarPaciente()">
+                            <small id="status_dni" class="text-muted"></small>
+
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="dni" class="form-label">DNI / Documento</label>
-                            <input type="text" class="form-control border-dark" id="dni" name="dni" required>
+                            <label for="nombre_apellido" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control border-dark" id="nombre_apellido" name="nombre_apellido" required disabled>
                         </div>
+
                     </div>
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label for="edad" class="form-label">Edad</label>
-                            <input type="number" class="form-control border-dark" id="edad" name="edad" required>
+                            <input type="number" class="form-control border-dark" id="edad" name="edad" required disabled>
                         </div>
                         <div class="col-md-3 mb-3">
                             <label for="sexo" class="form-label">Sexo</label>
-                            <select class="form-select border-dark" id="sexo" name="sexo" required>
+                            <select class="form-select border-dark" id="sexo" name="sexo" required disabled>
                                 <option value="">Seleccionar...</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Femenino</option>
@@ -141,12 +144,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="telefono" class="form-label">Teléfono de contacto</label>
-                            <input type="tel" class="form-control border-dark" id="telefono" name="telefono">
+                            <input type="tel" class="form-control border-dark" id="telefono" name="telefono" disabled>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="obra_social" class="form-label">Obra Social / Cobertura médica</label>
-                        <input type="text" class="form-control border-dark" id="obra_social" name="obra_social">
+                        <input type="text" class="form-control border-dark" id="obra_social" name="obra_social" disabled>
                     </div>
                 </div>
             </div>
@@ -394,6 +397,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        async function buscarPaciente() {
+            const dni = document.getElementById('dni').value.trim();
+            const status = document.getElementById('status_dni');
+
+            if (dni === "") return;
+
+            try {
+                const response = await fetch(`buscar_paciente.php?dni=${dni}`);
+                const data = await response.json();
+
+                const campos = document.querySelectorAll('#nombre_apellido, #edad, #sexo, #telefono, #obra_social');
+
+                if (data.existe) {
+                    const p = data.paciente;
+
+                    // Autocompletar datos
+                    document.getElementById('nombre_apellido').value = p.nombre_apellido;
+                    document.getElementById('edad').value = p.edad;
+                    document.getElementById('sexo').value = p.sexo;
+                    document.getElementById('telefono').value = p.telefono;
+                    document.getElementById('obra_social').value = p.obra_social;
+
+                    // Mantener deshabilitados
+                    campos.forEach(campo => {
+                        campo.setAttribute('disabled', true);
+                        campo.classList.add('bg-light');
+                    });
+
+                    status.textContent = "✅ Paciente encontrado. Datos bloqueados (ya cargados).";
+                    status.className = "text-success";
+
+                } else {
+                    // Limpiar y habilitar para nuevo paciente
+                    campos.forEach(campo => {
+                        campo.value = "";
+                        campo.removeAttribute('disabled');
+                        campo.classList.remove('bg-light');
+                    });
+
+                    status.textContent = "🆕 Paciente no encontrado. Complete los datos.";
+                    status.className = "text-warning";
+                }
+
+            } catch (error) {
+                console.error(error);
+                status.textContent = "⚠️ Error al buscar el paciente.";
+                status.className = "text-danger";
+            }
+        }
+
+        // También permitir buscar al presionar Enter
+        document.getElementById('dni').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarPaciente();
+            }
+        });
+    </script>
+
+
 </body>
 
 </html>
