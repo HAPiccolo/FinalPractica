@@ -424,7 +424,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     // Mantener deshabilitados
                     campos.forEach(campo => {
-                        campo.setAttribute('disabled', true);
+                        campo.removeAttribute('disabled');
                         campo.classList.add('bg-light');
                     });
 
