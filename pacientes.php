@@ -16,7 +16,7 @@ $sql = "SELECT
             p.dni,
             p.edad,
             a.tipo_accidente,
-            a.fecha_accidente
+            p.fecha_registro
         FROM pacientes p
         INNER JOIN accidentes a ON a.paciente_id = p.id
         $where
@@ -43,15 +43,15 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="container mt-4">
         <h2 class="text-center mb-4">Listado de Accidentados</h2>
-        
+
         <!-- Filtro de búsqueda con botones -->
         <div class="row mb-4">
             <div class="col-md-6 mx-auto">
                 <form class="d-flex gap-2" method="GET">
                     <div class="input-group">
-                        <input type="text" name="dni" id="dni" class="form-control" 
-                               placeholder="Buscar por DNI" 
-                               value="<?php echo htmlspecialchars($_GET['dni'] ?? ''); ?>">
+                        <input type="text" name="dni" id="dni" class="form-control"
+                            placeholder="Buscar por DNI"
+                            value="<?php echo htmlspecialchars($_GET['dni'] ?? ''); ?>">
                     </div>
                     <button type="submit" class="btn btn-primary">Buscar</button>
                     <?php if (isset($_GET['dni']) && !empty($_GET['dni'])): ?>
@@ -70,7 +70,7 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>DNI</th>
                             <th>Edad</th>
                             <th>Tipo Accidente</th>
-                            <th>Fecha</th>
+                            <th>Fecha de ingreso</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -81,10 +81,10 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars($row['dni']); ?></td>
                                 <td><?php echo htmlspecialchars($row['edad']); ?></td>
                                 <td><?php echo htmlspecialchars($row['tipo_accidente']); ?></td>
-                                <td><?php echo date('d/m/Y H:i', strtotime($row['fecha_accidente'])); ?></td>
+                                <td><?php echo date('d/m/Y H:i', strtotime($row['fecha_registro'])); ?></td>
                                 <td>
-                                    <a href="ver_accidente.php?id=<?php echo $row['accidente_id']; ?>" 
-                                       class="btn btn-sm btn-primary">Ver</a>
+                                    <a href="ver_accidente.php?id=<?php echo $row['accidente_id']; ?>"
+                                        class="btn btn-sm btn-primary">Ver</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -104,4 +104,5 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
