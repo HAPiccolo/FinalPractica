@@ -20,7 +20,7 @@ $sql = "SELECT
         FROM pacientes p
         INNER JOIN accidentes a ON a.paciente_id = p.id
         $where
-        ORDER BY a.fecha_accidente DESC";
+        ORDER BY a.fecha_registro DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
@@ -92,7 +92,7 @@ $accidentados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </table>
             </div>
         <?php else: ?>
-            <div class="alert alert-info text-center">
+            <div class="alert alert-danger text-center">
                 <?php if (!empty($_GET['dni'])): ?>
                     No se encontraron accidentes para el DNI: <?php echo htmlspecialchars($_GET['dni']); ?>
                 <?php else: ?>
