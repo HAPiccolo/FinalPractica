@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="uso_casco_cinturon" class="form-label">Uso de casco / cinturón</label>
-                            <select class="form-select border-dark" id="uso_casco_cinturon" name="uso_casco_cinturon">
+                            <select class="form-select border-dark" id="uso_casco_cinturon" name="uso_casco_cinturon" required>
                                 <option value="">Seleccionar...</option>
                                 <option value="Sí">Sí</option>
                                 <option value="No">No</option>
